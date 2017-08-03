@@ -10,6 +10,10 @@
   with_items:
   - python-psycopg2
 
+- name: postgres | see if host is a slave
+  stat: path={{ postgresql_datadir }}/recovery.conf
+  register: is_slave
+
 - name: postgres | create database
   become: yes
   become_user: postgres
@@ -20,17 +24,28 @@
   with_subelements:
     - "{{ postgresql_users_databases }}"
     - databases
+  when: not is_slave.stat.exists
 
 - name: postgres | create user
   become: yes
   become_user: postgres
   postgresql_user:
+    login_user: 'postgres'
     db: "{{ item.1 }}"
     encrypted: yes
     name: "{{ item.0.user }}"
     password: "{{ item.0.password }}"
     role_attr_flags: "{{ item.0.roles | default(omit) }}"
-    state: present
+    priv: "{{ item.0.privs | default(omit) }}"
+    state: "{{ item.0.state | default('present') }}"
   with_subelements:
     - "{{ postgresql_users_databases }}"
     - databases
+  when: not is_slave.stat.exists
+
+- name: postgres | enable extensions
+  become: yes
+  become_user: postgres
+  postgresql_ext: name={{ item.name }} db={{ item.db }} state={{ item.state|default('present') }}
+  with_items: "{{ postgresql_extensions }}"
+  when: not is_slave.stat.exists

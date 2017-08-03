@@ -36,6 +36,7 @@ Example Playbook
       - postgresql
       vars:
       - postgresql_server_listen: "'*'"
+      - postgresql_extensions: [ { name: 'hstore', db: 'payuk' } ]
       - postgresql_server_auth:
         - database: publicdb
           user: alice123
@@ -44,6 +45,8 @@ Example Playbook
         - user: alice
           password: alice123
           databases: [publicdb, secretdb]
+          role: "<something>"
+          privs: "<something>"
         - user: bob
           password: bob123
           databases: [publicdb]

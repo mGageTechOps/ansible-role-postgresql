@@ -7,6 +7,9 @@ postgresql_version: "9.4"
 # Whether to install and setup PostgreSQL server
 postgresql_install_server: True
 
+# Whether to additionally install contrib extensions
+postgresql_install_contrib: True
+
 # List of dictionaries containing user and databases information
 postgresql_users_databases: []
 
@@ -21,3 +24,9 @@ postgresql_server_auth: []
 
 # Recursively reset the owner/group of the postgres datadir?
 postgresql_server_chown_datadir: False
+
+# Arbitrary config options for postgres.conf (in option: x, value: y pairs)
+postgres_conf_options: []
+
+# Extensions to enable/disable (in name: x, db: y, state: z sets)
+postgresql_extensions: []

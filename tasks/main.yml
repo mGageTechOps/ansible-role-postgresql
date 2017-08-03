@@ -20,6 +20,13 @@
     state: present
   when: postgresql_install_server
 
+- name: postgres | install contrib packages
+  become: yes
+  yum:
+    name: "{{ postgresql_basename }}-contrib"
+    state: present
+  when: postgresql_install_server and postgresql_install_contrib
+
 - name: postgres | set permissions on data directory
   become: yes
   file:
@@ -53,6 +60,22 @@
   notify:
     - restart postgresql
   when: postgresql_install_server
+
+- name: postgres | set arbitrary config options
+  become: yes
+  become_user: postgres
+  lineinfile:
+    backup: yes
+    dest: "{{ postgresql_datadir }}/postgresql.conf"
+    group: postgres
+    line: "{{ item.option }} = {{ item.value }}"
+    owner: postgres
+    regexp: "^{{ item.option|regex_escape }}\\s*="
+    state: present
+  notify:
+    - restart postgresql
+  when: postgresql_install_server and postgres_conf_options
+  with_items: "{{ postgres_conf_options }}"
 
 - name: postgres | configure client authorisation
   become: yes
