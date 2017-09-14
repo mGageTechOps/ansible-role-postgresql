@@ -104,3 +104,8 @@
 
 - include: databases.yml
   when: postgresql_users_databases.0 is defined
+
+- name: Save out a recovery.conf template file
+  template: src=../templates/recovery.conf.templ.j2 dest={{ postgresql_datadir }}/recovery.conf.templ owner=postgres group=postgres mode=0640
+  when: postgresql_install_server
+
