@@ -10,8 +10,11 @@
 - name: postgres | install client packages
   become: yes
   yum:
-    name: "{{ postgresql_basename }}"
+    name: "{{ item }}"
     state: present
+  with_items:
+  - "{{ postgresql_basename }}"
+  - "{{ postgresql_basename }}-devel"
 
 - name: postgres | install server packages
   become: yes
@@ -95,6 +98,9 @@
     name: postgresql-{{ postgresql_version }}
     state: started
   when: postgresql_install_server
+
+- name: Provide a symlink to pg_config
+  file: src=/usr/pgsql-{{ postgresql_version }}/bin/pg_config dest=/usr/local/bin/pg_config owner=root group=root state=link
 
 - include: databases.yml
   when: postgresql_users_databases.0 is defined
