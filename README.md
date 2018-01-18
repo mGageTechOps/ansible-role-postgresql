@@ -30,6 +30,8 @@ Defaults: `defaults/main.yml`
 Example Playbook
 ----------------
 
+On a server:
+
     # Install PostgreSQL, configure authenticaton, create users and databases.
     - hosts: localhost
       roles:
@@ -51,9 +53,16 @@ Example Playbook
           password: bob123
           databases: [publicdb]
 
-
+On a client:
+    # Install Postgres client libraries
+    - hosts: localhost
+    roles:
+    - postgresql
+    vars:
+    - postgresql_install_server: no
 
 Author Information
 ------------------
 
 ome-devel@lists.openmicroscopy.org.uk
+Modified by Ralph Bolton (coofercat at github.com)
